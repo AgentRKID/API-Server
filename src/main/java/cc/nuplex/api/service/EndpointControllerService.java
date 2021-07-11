@@ -4,7 +4,7 @@ import cc.nuplex.api.Application;
 import cc.nuplex.api.endpoint.Endpoint;
 import cc.nuplex.api.endpoint.filter.Filter;
 import cc.nuplex.api.endpoint.route.RouteFunction;
-import cc.nuplex.api.endpoint.transformer.JsonTransformer;
+import cc.nuplex.api.endpoint.route.transformer.JsonTransformer;
 import cc.nuplex.api.util.ClassUtils;
 import lombok.Getter;
 import spark.Spark;

@@ -1,4 +1,4 @@
-package cc.nuplex.api.endpoint.transformer;
+package cc.nuplex.api.endpoint.route.transformer;
 
 import cc.nuplex.api.Application;
 import spark.ResponseTransformer;
