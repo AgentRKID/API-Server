@@ -2,6 +2,8 @@ package cc.nuplex.api.endpoint;
 
 import cc.nuplex.api.endpoint.filter.Filter;
 import cc.nuplex.api.endpoint.route.RouteFunction;
+import cc.nuplex.api.util.JsonBuilder;
+import com.google.gson.JsonObject;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -10,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class Endpoint {
+
+    public static final JsonObject SUCCESS = new JsonBuilder().build();
 
     @Getter private final String endpoint;
 
