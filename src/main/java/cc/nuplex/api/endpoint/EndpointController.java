@@ -1,18 +1,14 @@
 package cc.nuplex.api.endpoint;
 
-import cc.nuplex.api.Application;
-import cc.nuplex.api.endpoint.Endpoint;
 import cc.nuplex.api.endpoint.filter.Filter;
 import cc.nuplex.api.endpoint.impl.ProfileEndpoint;
 import cc.nuplex.api.endpoint.impl.StatusEndpoint;
 import cc.nuplex.api.endpoint.route.RouteFunction;
 import cc.nuplex.api.endpoint.transformer.JsonTransformer;
-import cc.nuplex.api.util.ClassUtils;
 import lombok.Getter;
 import spark.Spark;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -39,6 +35,14 @@ public class EndpointController {
         this.endpoints.add(new StatusEndpoint());
         this.endpoints.add(new ProfileEndpoint());
 
+        // Set default response transformer,
+        // everything should be returned as JSON.
+        Spark.defaultResponseTransformer(JSON_TRANSFORMER);
+
+        // Configure the 404 Page
+        Spark.notFound((request, response) -> EndpointErrors.INVALID_PAGE);
+
+        // Load all found endpoints
         for (Endpoint endpoint : this.endpoints) {
             for (Map.Entry<String, RouteFunction> entry : endpoint.getRoutes().entrySet()) {
                 Endpoint.Type type = endpoint.getRouteTypes().get(entry.getKey());
@@ -46,23 +50,24 @@ public class EndpointController {
 
                 switch(type) {
                     case GET: {
-                        Spark.get(completeEndpoint, (request, response) -> entry.getValue().handle(request, response), JSON_TRANSFORMER);
+                        Spark.get(completeEndpoint, (request, response) -> entry.getValue().handle(request, response));
                         break;
                     }
 
                     case POST: {
-                        Spark.post(completeEndpoint, (request, response) -> entry.getValue().handle(request, response), JSON_TRANSFORMER);
+                        Spark.post(completeEndpoint, (request, response) -> entry.getValue().handle(request, response));
                         break;
                     }
 
                     case DELETE: {
-                        Spark.delete(completeEndpoint, (request, response) -> entry.getValue().handle(request, response), JSON_TRANSFORMER);
+                        Spark.delete(completeEndpoint, (request, response) -> entry.getValue().handle(request, response));
                         break;
                     }
                 }
 
                 List<Filter> filters = endpoint.getFilters().get(entry.getKey());
 
+                // Load filters
                 if (filters != null && !filters.isEmpty()) {
                     for (Filter filter : filters) {
                         if (filter.isBefore()) {

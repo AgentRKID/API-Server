@@ -7,6 +7,7 @@ import cc.nuplex.api.endpoint.EndpointController;
 import cc.nuplex.api.profile.ProfileManager;
 import cc.nuplex.api.rank.RankManager;
 import cc.nuplex.api.storage.Mongo;
+import cc.nuplex.api.util.LogFormat;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
@@ -43,6 +44,11 @@ public class Application {
 
 
     public Application() {
+        LOGGER.setUseParentHandlers(false);
+        LOGGER.addHandler(new LogFormat());
+
+        long start = System.currentTimeMillis();
+
         instance = this;
 
         this.configuration = new Configuration();
@@ -67,9 +73,11 @@ public class Application {
         this.mongo.connect(mongoSettings.getUri());
         this.database = this.mongo.getClient().getDatabase(mongoSettings.getDb());
 
-        this.profileManager = new ProfileManager();
         this.rankManager = new RankManager();
+        this.profileManager = new ProfileManager();
         this.endpointService = new EndpointController();
+
+        LOGGER.info("Started Web API in " + (System.currentTimeMillis() - start) + "ms!");
     }
 
     public void stop() {
