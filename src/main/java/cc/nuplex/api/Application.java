@@ -1,44 +1,81 @@
 package cc.nuplex.api;
 
+import cc.nuplex.api.config.Configuration;
+import cc.nuplex.api.config.mongo.MongoSettings;
+import cc.nuplex.api.config.spark.SparkSettings;
 import cc.nuplex.api.endpoint.EndpointController;
 import cc.nuplex.api.profile.ProfileManager;
+import cc.nuplex.api.rank.RankManager;
 import cc.nuplex.api.storage.Mongo;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParser;
 import com.mongodb.client.MongoDatabase;
 import lombok.Getter;
 import spark.Spark;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 public class Application {
 
+    public static ExecutorService EXECUTOR = Executors.newCachedThreadPool();
+
     public static final Logger LOGGER = Logger.getLogger("API");
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    public static final JsonParser JSON_PARSER = new JsonParser();
 
     @Getter private static Application instance;
 
-    @Getter private final Mongo mongo;
-    @Getter private final MongoDatabase database;
+    @Getter private final Configuration configuration;
 
-    @Getter private final ProfileManager profileManager;
-    @Getter private final EndpointController endpointService;
+    @Getter private Mongo mongo;
+    @Getter private MongoDatabase database;
+
+    @Getter private ProfileManager profileManager;
+    @Getter private RankManager rankManager;
+    @Getter private EndpointController endpointService;
+
+    public static void main(String[] args) {
+        new Application();
+    }
+
 
     public Application() {
         instance = this;
 
-        Spark.port(90);
+        this.configuration = new Configuration();
+        if (!this.configuration.load()) {
+            return;
+        }
+
+        SparkSettings sparkSettings = this.configuration.getSparkSettings();
+
+        Spark.port(sparkSettings.getPort());
+
+        if (sparkSettings.getMaxThreads() > 1
+                && sparkSettings.getMinThreads() > 1
+                && sparkSettings.getThreadTimeout() > 1) {
+            Spark.threadPool(sparkSettings.getMaxThreads(), sparkSettings.getMinThreads(), sparkSettings.getThreadTimeout());
+        }
+
+        MongoSettings mongoSettings = this.configuration.getMongoSettings();
 
         this.mongo = new Mongo();
-        this.mongo.connect("mongodb://localhost:27017");
-        this.database = this.mongo.getClient().getDatabase("API");
+
+        this.mongo.connect(mongoSettings.getUri());
+        this.database = this.mongo.getClient().getDatabase(mongoSettings.getDb());
 
         this.profileManager = new ProfileManager();
+        this.rankManager = new RankManager();
         this.endpointService = new EndpointController();
     }
 
-    public static void main(String[] args) {
-        new Application();
+    public void stop() {
+        Spark.stop();
+
+        this.configuration.save();
     }
 
 }

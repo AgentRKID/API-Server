@@ -1,4 +1,4 @@
-package cc.nuplex.api.util;
+package cc.nuplex.api.util.json;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;

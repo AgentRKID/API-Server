@@ -8,17 +8,10 @@ import com.mongodb.client.model.Filters;
 import org.bson.Document;
 
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 public class ProfileManager {
-
-    public static ExecutorService EXECUTOR = Executors.newCachedThreadPool();
 
     // TODO: Remove After 5 Minutes if the profile hasn't been touched.
     private final Map<UUID, Profile> uuidToProfile = new ConcurrentHashMap<>();
@@ -90,7 +83,7 @@ public class ProfileManager {
     }
 
     public void save(Profile profile) {
-        EXECUTOR.execute(() -> {
+        Application.EXECUTOR.execute(() -> {
             long start = System.currentTimeMillis();
 
             Document document = new Document();

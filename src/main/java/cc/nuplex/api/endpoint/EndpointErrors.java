@@ -1,6 +1,6 @@
 package cc.nuplex.api.endpoint;
 
-import cc.nuplex.api.util.JsonBuilder;
+import cc.nuplex.api.util.json.JsonBuilder;
 import com.google.gson.JsonObject;
 
 public class EndpointErrors {

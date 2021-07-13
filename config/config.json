@@ -1,0 +1,12 @@
+{
+  "spark-settings": {
+    "port": 90,
+    "max-threads": -1,
+    "min-threads": -1,
+    "thread-timeout-ms": -1
+  },
+  "mongo-settings": {
+    "uri": "mongodb://localhost:27017",
+    "db": "API"
+  }
+}

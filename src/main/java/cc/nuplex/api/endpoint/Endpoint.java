@@ -2,7 +2,7 @@ package cc.nuplex.api.endpoint;
 
 import cc.nuplex.api.endpoint.filter.Filter;
 import cc.nuplex.api.endpoint.route.RouteFunction;
-import cc.nuplex.api.util.JsonBuilder;
+import cc.nuplex.api.util.json.JsonBuilder;
 import com.google.gson.JsonObject;
 import lombok.Getter;
 

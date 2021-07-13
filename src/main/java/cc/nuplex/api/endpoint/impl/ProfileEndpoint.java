@@ -3,6 +3,7 @@ package cc.nuplex.api.endpoint.impl;
 import cc.nuplex.api.Application;
 import cc.nuplex.api.endpoint.Endpoint;
 import cc.nuplex.api.endpoint.EndpointErrors;
+import cc.nuplex.api.profile.Profile;
 import cc.nuplex.api.util.UUIDUtils;
 import spark.Spark;
 
@@ -27,10 +28,23 @@ public class ProfileEndpoint extends Endpoint {
                 }
             }
 
+            Profile profile = null;
+
             if (request.queryMap().hasKey("username")) {
-                return Application.getInstance().getProfileManager().getProfile(uuid, request.queryParams("username"));
+                String username = request.queryParams("username");
+
+                profile = Application.getInstance().getProfileManager().getProfile(uuid, username);
+
+                if (!profile.getUsername().equals(username)) {
+                    profile.setUsername(username);
+                }
             }
-            return Application.getInstance().getProfileManager().getProfile(uuid);
+
+            if (profile != null) {
+                profile = Application.getInstance().getProfileManager().getProfile(uuid);
+            }
+
+            return profile;
         });
     }
 
