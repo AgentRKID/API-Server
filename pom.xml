@@ -87,5 +87,10 @@
             <artifactId>lombok</artifactId>
             <version>1.18.20</version>
         </dependency>
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongo-java-driver</artifactId>
+            <version>3.12.8</version>
+        </dependency>
     </dependencies>
 </project>

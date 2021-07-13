@@ -1,8 +1,10 @@
-package cc.nuplex.api.service;
+package cc.nuplex.api.endpoint;
 
 import cc.nuplex.api.Application;
 import cc.nuplex.api.endpoint.Endpoint;
 import cc.nuplex.api.endpoint.filter.Filter;
+import cc.nuplex.api.endpoint.impl.ProfileEndpoint;
+import cc.nuplex.api.endpoint.impl.StatusEndpoint;
 import cc.nuplex.api.endpoint.route.RouteFunction;
 import cc.nuplex.api.endpoint.transformer.JsonTransformer;
 import cc.nuplex.api.util.ClassUtils;
@@ -14,14 +16,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-public class EndpointControllerService {
+public class EndpointController {
 
     private static final JsonTransformer JSON_TRANSFORMER = new JsonTransformer();
 
     @Getter private final List<Endpoint> endpoints = new ArrayList<>();
 
-    public EndpointControllerService() {
-        Collection<Class<?>> classes = ClassUtils.getClassesInPackage(Application.class, Application.class.getPackage().getName());
+    public EndpointController() {
+        /*Collection<Class<?>> classes = ClassUtils.getClassesInPackage(Application.class, Application.class.getPackage().getName());
 
         for (Class<?> clazz : classes) {
             if (clazz.getSuperclass() == Endpoint.class) {
@@ -32,7 +34,10 @@ public class EndpointControllerService {
                     System.out.println("Failed to create Endpoint for " + clazz.getSimpleName());
                 }
             }
-        }
+        }*/
+
+        this.endpoints.add(new StatusEndpoint());
+        this.endpoints.add(new ProfileEndpoint());
 
         for (Endpoint endpoint : this.endpoints) {
             for (Map.Entry<String, RouteFunction> entry : endpoint.getRoutes().entrySet()) {

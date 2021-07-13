@@ -13,7 +13,7 @@ import java.util.Map;
 
 public abstract class Endpoint {
 
-    public static final JsonObject SUCCESS = new JsonBuilder().build();
+    public static final JsonObject SUCCESS = new JsonBuilder().add("success", true).build();
 
     @Getter private final String endpoint;
 
