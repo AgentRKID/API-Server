@@ -59,8 +59,10 @@ public class RankManager {
             if (other != null) {
                 rank.update(other);
             }
-        } catch (Exception ignored) {}
-        return null;
+            return rank;
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 
     public Document find(String string) {
