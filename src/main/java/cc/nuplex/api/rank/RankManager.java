@@ -46,9 +46,18 @@ public class RankManager {
             nameToRank.put(this.defaultRank.getName().toLowerCase(), this.defaultRank);
             this.ranks.add(this.defaultRank);
 
-            this.save(this.defaultRank);
+            this.save(this.defaultRank, true);
         }
         Application.LOGGER.info("Loaded " + this.ranks.size() + " Rank" + (this.ranks.size() == 1 ? "" : "s") + "!");
+    }
+
+    public void stop() {
+        for (Rank rank : this.ranks) {
+            this.save(rank, false);
+        }
+        this.ranks.clear();
+        this.uuidToRank.clear();
+        this.nameToRank.clear();
     }
 
     public Rank load(Document document) {
@@ -104,8 +113,8 @@ public class RankManager {
         return null;
     }
 
-    public void save(Rank rank) {
-        Application.EXECUTOR.execute(() -> {
+    public void save(Rank rank, boolean async) {
+        Runnable runnable = () -> {
             Document document = new Document();
 
             document.put("uuid", rank.getRankId().toString());
@@ -113,7 +122,13 @@ public class RankManager {
             document.put("rank", Application.GSON.toJson(rank));
 
             this.collection.replaceOne(Filters.eq("uuid", rank.getRankId().toString()), document, MongoUtils.UPSERT_OPTIONS);
-        });
+        };
+
+        if (async) {
+            Application.EXECUTOR.execute(runnable);
+        } else {
+            runnable.run();
+        }
     }
 
 }

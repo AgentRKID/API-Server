@@ -3,6 +3,7 @@ package cc.nuplex.api.rank;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.beans.ConstructorProperties;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -21,6 +22,7 @@ public class Rank {
 
     @Getter @Setter private boolean hidden = false;
 
+    @ConstructorProperties({ "rankId", "name" })
     public Rank(UUID rankId, String name) {
         this.rankId = rankId;
         this.name = name;

@@ -12,13 +12,11 @@ public class Mongo {
         client = new MongoClient(new MongoClientURI(uri));
     }
 
-    public boolean close() {
+    public void close() {
         if (client != null) {
             client.close();
             client = null;
-            return true;
         }
-        return false;
     }
 
 }

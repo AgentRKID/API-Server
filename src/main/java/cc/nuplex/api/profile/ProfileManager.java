@@ -19,11 +19,18 @@ public class ProfileManager {
 
     private final MongoCollection<Document> collection = Application.getInstance().getDatabase().getCollection("profiles");
 
-    public ProfileManager() {}
+    public void stop() {
+        for (Profile profile : this.uuidToProfile.values()) {
+            this.save(profile, false);
+        }
+        this.uuidToProfile.clear();
+        this.usernameToProfile.clear();
+    }
 
     public Profile getProfile(UUID uuid) {
         Profile profile = this.uuidToProfile.get(uuid);
 
+        // Found profile, recache, and return.
         if (profile != null) {
             this.uuidToProfile.put(uuid, profile);
             this.usernameToProfile.put(profile.getUsername().toLowerCase(), profile);
@@ -36,6 +43,7 @@ public class ProfileManager {
     public Profile getProfile(String username) {
         Profile profile = this.usernameToProfile.get(username.toLowerCase());
 
+        // Found profile, recache, and return.
         if (profile != null) {
             this.uuidToProfile.put(profile.getUniqueId(), profile);
             this.usernameToProfile.put(profile.getUsername().toLowerCase(), profile);
@@ -48,6 +56,7 @@ public class ProfileManager {
     public Profile getProfile(UUID uuid, String username) {
         Profile profile = this.uuidToProfile.get(uuid);
 
+        // Found profile by uuid
         if (profile != null) {
             this.uuidToProfile.put(profile.getUniqueId(), profile);
             this.usernameToProfile.put(profile.getUsername().toLowerCase(), profile);
@@ -55,22 +64,26 @@ public class ProfileManager {
             return profile;
         }
 
+        // Couldn't find by UUID lets try username.
         profile = this.usernameToProfile.get(username.toLowerCase());
 
+        // Couldn't find profile, lets try mongo.
         if (profile == null) {
             Document document = this.find(uuid);
 
+            // Found a document with a profile key, we're going to hopefully use that.
             if (document != null && document.containsKey("profile")) {
                 if (document.containsKey("uuid") && document.containsKey("username")) {
                     profile = new Profile(UUIDUtils.fromString(document.getString("uuid")), document.getString("username"));
                     profile.update(Application.GSON.fromJson(document.getString("profile"), Profile.class));
                 }
-            } else {
+            } else { // Couldn't find document, lets just create one and save it.
                 profile = new Profile(uuid, username);
-                this.save(profile);
+                this.save(profile, true);
             }
         }
 
+        // Profile wasn't null lets cache them.
         if (profile != null) {
             this.uuidToProfile.put(profile.getUniqueId(), profile);
             this.usernameToProfile.put(profile.getUsername().toLowerCase(), profile);
@@ -82,8 +95,8 @@ public class ProfileManager {
         return collection.find(Filters.eq("uuid", uuid.toString())).first();
     }
 
-    public void save(Profile profile) {
-        Application.EXECUTOR.execute(() -> {
+    public void save(Profile profile, boolean async) {
+        Runnable runnable = () -> {
             long start = System.currentTimeMillis();
 
             Document document = new Document();
@@ -95,7 +108,13 @@ public class ProfileManager {
             collection.replaceOne(Filters.eq("uuid", profile.getUniqueId().toString()), document, MongoUtils.UPSERT_OPTIONS);
 
             Application.LOGGER.info("Saved " + profile.getUsername() + " in " + (System.currentTimeMillis() - start) + "ms!");
-        });
+        };
+
+        if (async) {
+            Application.EXECUTOR.execute(runnable);
+        } else {
+            runnable.run();
+        }
     }
 
     public void removeProfile(UUID uuid) {

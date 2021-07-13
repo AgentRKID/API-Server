@@ -10,6 +10,7 @@ public class SparkSettings implements JsonHandler<JsonObject> {
     @Getter private int maxThreads = -1;
     @Getter private int minThreads = -1;
     @Getter private int threadTimeout = -1;
+    @Getter private boolean debug = false;
 
     @Override
     public void load(JsonObject object) {
@@ -17,6 +18,7 @@ public class SparkSettings implements JsonHandler<JsonObject> {
         this.maxThreads = object.get("max-threads").getAsInt();
         this.minThreads = object.get("min-threads").getAsInt();
         this.threadTimeout = object.get("thread-timeout-ms").getAsInt();
+        this.debug = object.get("debug").getAsBoolean();
     }
 
     @Override
@@ -27,6 +29,7 @@ public class SparkSettings implements JsonHandler<JsonObject> {
         object.addProperty("max-threads", this.maxThreads);
         object.addProperty("min-threads", this.minThreads);
         object.addProperty("thread-timeout-ms", this.threadTimeout);
+        object.addProperty("debug", this.debug);
 
         return object;
     }

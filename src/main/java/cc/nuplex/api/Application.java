@@ -14,6 +14,7 @@ import com.google.gson.JsonParser;
 import com.mongodb.client.MongoDatabase;
 import lombok.Getter;
 import spark.Spark;
+import spark.debug.DebugScreen;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -44,6 +45,7 @@ public class Application {
 
 
     public Application() {
+        // Remove parent handler & use our own.
         LOGGER.setUseParentHandlers(false);
         LOGGER.addHandler(new LogFormat());
 
@@ -52,6 +54,8 @@ public class Application {
         instance = this;
 
         this.configuration = new Configuration();
+
+        // Configuration failed to load, lets not start anything else.
         if (!this.configuration.load()) {
             return;
         }
@@ -60,10 +64,16 @@ public class Application {
 
         Spark.port(sparkSettings.getPort());
 
+        // Configuration for the Multi-Threading in Spark.
         if (sparkSettings.getMaxThreads() > 1
                 && sparkSettings.getMinThreads() > 1
                 && sparkSettings.getThreadTimeout() > 1) {
             Spark.threadPool(sparkSettings.getMaxThreads(), sparkSettings.getMinThreads(), sparkSettings.getThreadTimeout());
+        }
+
+        // Enable Debug screen for Spark
+        if (sparkSettings.isDebug()) {
+            DebugScreen.enableDebugScreen();
         }
 
         MongoSettings mongoSettings = this.configuration.getMongoSettings();
@@ -81,9 +91,18 @@ public class Application {
     }
 
     public void stop() {
+        // Stop Spark
         Spark.stop();
 
+        // Completely save the configuration
         this.configuration.save();
+
+        // Stop all managers
+        this.profileManager.stop();
+        this.rankManager.stop();
+
+        // Close mongo connection
+        this.mongo.close();
     }
 
 }
