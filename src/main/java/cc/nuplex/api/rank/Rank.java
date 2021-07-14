@@ -10,8 +10,8 @@ import java.util.UUID;
 
 public class Rank {
 
-    @Getter private final transient UUID rankId;
-    @Getter private final transient String name;
+    @Getter private final UUID rankId;
+    @Getter private final String name;
 
     @Getter @Setter private int weight = 1;
     @Getter @Setter private String prefix = "";

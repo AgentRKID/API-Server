@@ -5,6 +5,7 @@ import cc.nuplex.api.endpoint.Endpoint;
 import cc.nuplex.api.endpoint.EndpointErrors;
 import cc.nuplex.api.profile.Profile;
 import cc.nuplex.api.util.UUIDUtils;
+import org.bson.Document;
 import spark.Spark;
 
 import java.util.UUID;

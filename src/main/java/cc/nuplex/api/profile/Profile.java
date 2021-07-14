@@ -9,17 +9,18 @@ import java.util.Set;
 import java.util.UUID;
 
 public class Profile {
-
-    @Getter private transient final UUID uniqueId;
-    @Getter @Setter private transient String username;
+    @Getter private String uuid;
+    @Getter @Setter private String username;
 
     @Getter @Setter private Set<String> ignored = new HashSet<>();
 
     @ConstructorProperties({ "uniqueId ", "username" })
-    public Profile(UUID uniqueId, String username) {
-        this.uniqueId = uniqueId;
+    public Profile(String uuid, String username) {
+        this.uuid = uuid;
         this.username = username;
     }
+
+    public Profile() {}
 
     public void update(Profile other) {
         this.ignored = other.ignored;

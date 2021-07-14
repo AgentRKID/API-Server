@@ -1,4 +1,4 @@
-package cc.nuplex.api.util;
+package cc.nuplex.api.util.log;
 
 import java.util.Date;
 import java.util.logging.Handler;

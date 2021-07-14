@@ -6,12 +6,14 @@ import lombok.Getter;
 
 public class MongoSettings implements JsonHandler<JsonObject> {
 
-    @Getter private String uri = "mongodb://localhost:27017";
+    @Getter private String host = "localhost";
+    @Getter private int port = 27017;
     @Getter private String db = "API";
 
     @Override
     public void load(JsonObject object) {
-        this.uri = object.get("uri").getAsString();
+        this.host = object.get("host").getAsString();
+        this.port = object.get("port").getAsInt();
         this.db = object.get("db").getAsString();
     }
 
@@ -19,7 +21,8 @@ public class MongoSettings implements JsonHandler<JsonObject> {
     public JsonObject save() {
         JsonObject object = new JsonObject();
 
-        object.addProperty("uri", this.uri);
+        object.addProperty("host", this.host);
+        object.addProperty("port", this.port);
         object.addProperty("db", this.db);
 
         return object;

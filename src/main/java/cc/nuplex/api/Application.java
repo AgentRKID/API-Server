@@ -5,9 +5,8 @@ import cc.nuplex.api.config.mongo.MongoSettings;
 import cc.nuplex.api.config.spark.SparkSettings;
 import cc.nuplex.api.endpoint.EndpointController;
 import cc.nuplex.api.profile.ProfileManager;
-import cc.nuplex.api.rank.RankManager;
 import cc.nuplex.api.storage.Mongo;
-import cc.nuplex.api.util.LogFormat;
+import cc.nuplex.api.util.log.LogFormat;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
@@ -36,7 +35,7 @@ public class Application {
     @Getter private MongoDatabase database;
 
     @Getter private ProfileManager profileManager;
-    @Getter private RankManager rankManager;
+    //@Getter private RankManager rankManager;
     @Getter private EndpointController endpointService;
 
     public static void main(String[] args) {
@@ -80,10 +79,10 @@ public class Application {
 
         this.mongo = new Mongo();
 
-        this.mongo.connect(mongoSettings.getUri());
+        this.mongo.connect(mongoSettings.getHost(), mongoSettings.getPort());
         this.database = this.mongo.getClient().getDatabase(mongoSettings.getDb());
 
-        this.rankManager = new RankManager();
+        //this.rankManager = new RankManager();
         this.profileManager = new ProfileManager();
         this.endpointService = new EndpointController();
 
@@ -98,11 +97,11 @@ public class Application {
         this.configuration.save();
 
         // Stop all managers
-        this.profileManager.stop();
-        this.rankManager.stop();
+        if (this.profileManager != null) this.profileManager.stop();
+        //this.rankManager.stop();
 
         // Close mongo connection
-        this.mongo.close();
+        if (this.mongo != null) this.mongo.close();
     }
 
 }
