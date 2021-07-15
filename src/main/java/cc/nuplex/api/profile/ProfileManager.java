@@ -26,7 +26,7 @@ public class ProfileManager {
         this.usernameToProfile.clear();
     }
 
-    public Profile getProfile(UUID uuid) {
+    public Profile getProfile(UUID uuid, boolean load) {
         Profile profile = this.uuidToProfile.get(uuid.toString());
 
         // Found profile, recache, and return.
@@ -37,15 +37,16 @@ public class ProfileManager {
             return profile;
         }
 
-        Document document = this.find(uuid);
+        if (load) {
+            Document document = this.find(uuid);
 
-        if (document != null && document.containsKey("uuid") && document.containsKey("username")) {
-            profile = Application.GSON.fromJson(document.toJson(), Profile.class);
+            if (document != null && document.containsKey("uuid") && document.containsKey("username")) {
+                profile = Application.GSON.fromJson(document.toJson(), Profile.class);
 
-            this.uuidToProfile.put(uuid.toString(), profile);
-            this.usernameToProfile.put(profile.getUsername().toLowerCase(), profile);
+                this.uuidToProfile.put(uuid.toString(), profile);
+                this.usernameToProfile.put(profile.getUsername().toLowerCase(), profile);
+            }
         }
-
         return profile;
     }
 
