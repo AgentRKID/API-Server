@@ -2,19 +2,19 @@ package cc.nuplex.api.profile;
 
 import cc.nuplex.api.Application;
 import cc.nuplex.api.util.MongoUtils;
+import cc.nuplex.api.util.map.ExpireableMap;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import org.bson.Document;
 
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 public class ProfileManager {
 
-    // TODO: Remove After 5 Minutes if the profile hasn't been touched.
-    private final Map<String, Profile> uuidToProfile = new ConcurrentHashMap<>();
-    private final Map<String, Profile> usernameToProfile = new ConcurrentHashMap<>();
+    private final Map<String, Profile> uuidToProfile = new ExpireableMap<>(5L, TimeUnit.SECONDS);
+    private final Map<String, Profile> usernameToProfile = new ExpireableMap<>(5L, TimeUnit.SECONDS);
 
     private final MongoCollection<Document> collection = Application.getInstance().getDatabase().getCollection("profiles");
 
@@ -104,7 +104,7 @@ public class ProfileManager {
             long start = System.currentTimeMillis();
 
             this.collection.replaceOne(Filters.eq("uuid", profile.getUuid()),
-                    Document.parse(Application.GSON.toJson(profile)), MongoUtils.UPSERT_OPTIONS);
+                    profile.toDocument(), MongoUtils.UPSERT_OPTIONS);
 
             Application.LOGGER.info("Saved " + profile.getUsername() + " in " + (System.currentTimeMillis() - start) + "ms!");
         };

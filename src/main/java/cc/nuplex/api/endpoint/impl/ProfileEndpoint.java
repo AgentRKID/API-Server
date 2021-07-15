@@ -41,9 +41,11 @@ public class ProfileEndpoint extends Endpoint {
                 }
             }
 
-            if (profile != null) {
+            if (profile == null) {
                 profile = Application.getInstance().getProfileManager().getProfile(uuid);
             }
+
+            Application.getInstance().getProfileManager().save(profile, true);
 
             return profile;
         });

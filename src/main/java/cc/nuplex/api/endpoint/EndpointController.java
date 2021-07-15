@@ -1,5 +1,6 @@
 package cc.nuplex.api.endpoint;
 
+import cc.nuplex.api.Application;
 import cc.nuplex.api.endpoint.filter.Filter;
 import cc.nuplex.api.endpoint.impl.ProfileEndpoint;
 import cc.nuplex.api.endpoint.impl.StatusEndpoint;
@@ -77,8 +78,10 @@ public class EndpointController {
                         }
                     }
                 }
+                Application.LOGGER.info("Loaded the endpoint \"" + completeEndpoint + "\" [" + type.name() + "]");
             }
         }
+        Application.LOGGER.info("Loaded " + this.endpoints.size() + " endpoints!");
     }
 
 }

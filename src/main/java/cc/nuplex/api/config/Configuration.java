@@ -14,6 +14,8 @@ public class Configuration {
     private static final File directory = new File("config");
     private static final File config = new File(directory + File.separator + "config.json");
 
+    @Getter private boolean debug;
+
     @Getter private final SparkSettings sparkSettings = new SparkSettings();
     @Getter private final MongoSettings mongoSettings = new MongoSettings();
 
@@ -46,8 +48,12 @@ public class Configuration {
 
             JsonObject object = element.getAsJsonObject();
 
+            this.debug = object.get("debug").getAsBoolean();
+
             this.sparkSettings.load(object.get("spark-settings").getAsJsonObject());
             this.mongoSettings.load(object.get("mongo-settings").getAsJsonObject());
+
+            Application.LOGGER.info("Finished loading configuration.");
         } catch (Exception ex) {
             Application.getInstance().stop();
         }
@@ -56,6 +62,8 @@ public class Configuration {
 
     public void save() {
         JsonObject object = new JsonObject();
+
+        object.addProperty("debug", this.debug);
 
         object.add("spark-settings", this.sparkSettings.save());
         object.add("mongo-settings", this.mongoSettings.save());

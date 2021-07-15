@@ -1,10 +1,11 @@
 {
+  "debug": true,
   "spark-settings": {
     "port": 90,
     "max-threads": -1,
     "min-threads": -1,
     "thread-timeout-ms": -1,
-    "debug": true
+    "debug": false
   },
   "mongo-settings": {
     "host": "localhost",

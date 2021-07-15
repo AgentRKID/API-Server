@@ -48,7 +48,7 @@ public class RankManager {
 
             this.save(this.defaultRank, true);
         }
-        Application.LOGGER.info("Loaded " + this.ranks.size() + " Rank" + (this.ranks.size() == 1 ? "" : "s") + "!");
+        Application.LOGGER.info("Loaded " + this.ranks.size() + " Ranks!");
     }
 
     public void stop() {
@@ -62,13 +62,7 @@ public class RankManager {
 
     public Rank load(Document document) {
         try {
-            Rank rank = new Rank(UUID.fromString(document.getString("uuid")), document.getString("name"));
-            Rank other = Application.GSON.fromJson(document.getString("rank"), Rank.class);
-
-            if (other != null) {
-                rank.update(other);
-            }
-            return rank;
+            return Application.GSON.fromJson(document.toJson(), Rank.class);
         } catch (Exception ignored) {
             return null;
         }
@@ -114,15 +108,7 @@ public class RankManager {
     }
 
     public void save(Rank rank, boolean async) {
-        Runnable runnable = () -> {
-            Document document = new Document();
-
-            document.put("uuid", rank.getRankId().toString());
-            document.put("name", rank.getName());
-            document.put("rank", Application.GSON.toJson(rank));
-
-            this.collection.replaceOne(Filters.eq("uuid", rank.getRankId().toString()), document, MongoUtils.UPSERT_OPTIONS);
-        };
+        Runnable runnable = () -> this.collection.replaceOne(Filters.eq("uuid", rank.getRankId().toString()), rank.toDocument(), MongoUtils.UPSERT_OPTIONS);
 
         if (async) {
             Application.EXECUTOR.execute(runnable);
