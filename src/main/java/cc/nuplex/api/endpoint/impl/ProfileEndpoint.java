@@ -44,11 +44,6 @@ public class ProfileEndpoint extends Endpoint {
                 profile = profileManager.getProfile(uuid, true);
             }
 
-            profile.removeSetting(EpicEnum.NOT_EPIC);
-            profile.removeSetting(EpicEnum.EPIC);
-
-            profileManager.save(profile, true);
-
             return profile;
         });
 
