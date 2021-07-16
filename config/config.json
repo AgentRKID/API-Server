@@ -1,5 +1,10 @@
 {
   "debug": true,
+  "settings-to-remove": [
+    "EPIC",
+    "NOT_EPIC"
+  ],
+  "run-settings-to-remove": false,
   "spark-settings": {
     "port": 90,
     "max-threads": -1,

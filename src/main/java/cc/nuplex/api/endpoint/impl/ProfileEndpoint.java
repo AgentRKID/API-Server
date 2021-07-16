@@ -6,9 +6,7 @@ import cc.nuplex.api.endpoint.EndpointErrors;
 import cc.nuplex.api.profile.Profile;
 import cc.nuplex.api.profile.ProfileManager;
 import cc.nuplex.api.util.UUIDUtils;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import org.bson.Document;
 
 import java.util.UUID;
 
@@ -45,6 +43,11 @@ public class ProfileEndpoint extends Endpoint {
             if (profile == null) {
                 profile = profileManager.getProfile(uuid, true);
             }
+
+            profile.removeSetting(EpicEnum.NOT_EPIC);
+            profile.removeSetting(EpicEnum.EPIC);
+
+            profileManager.save(profile, true);
 
             return profile;
         });

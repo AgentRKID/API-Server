@@ -3,6 +3,7 @@ package cc.nuplex.api.config;
 import cc.nuplex.api.Application;
 import cc.nuplex.api.config.mongo.MongoSettings;
 import cc.nuplex.api.config.spark.SparkSettings;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.Getter;
@@ -15,6 +16,9 @@ public class Configuration {
     private static final File config = new File(directory + File.separator + "config.json");
 
     @Getter private boolean debug;
+
+    @Getter private JsonArray settingsToRemove = new JsonArray();
+    @Getter private boolean runRemoveSettings = false;
 
     @Getter private final SparkSettings sparkSettings = new SparkSettings();
     @Getter private final MongoSettings mongoSettings = new MongoSettings();
@@ -50,6 +54,9 @@ public class Configuration {
 
             this.debug = object.get("debug").getAsBoolean();
 
+            this.settingsToRemove = object.get("settings-to-remove").getAsJsonArray();
+            this.runRemoveSettings = object.get("run-settings-to-remove").getAsBoolean();
+
             this.sparkSettings.load(object.get("spark-settings").getAsJsonObject());
             this.mongoSettings.load(object.get("mongo-settings").getAsJsonObject());
 
@@ -64,6 +71,10 @@ public class Configuration {
         JsonObject object = new JsonObject();
 
         object.addProperty("debug", this.debug);
+
+        object.add("settings-to-remove", this.settingsToRemove);
+
+        object.addProperty("run-settings-to-remove", false);
 
         object.add("spark-settings", this.sparkSettings.save());
         object.add("mongo-settings", this.mongoSettings.save());
