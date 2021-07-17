@@ -1,6 +1,6 @@
 package cc.nuplex.api.profile;
 
-import cc.nuplex.api.profile.grant.Grant;
+import cc.nuplex.api.common.RankType;
 import cc.nuplex.api.util.interfaces.Documented;
 import cc.nuplex.api.util.interfaces.Used;
 import lombok.Getter;
@@ -14,8 +14,7 @@ public class Profile implements Documented {
     @Getter private String uuid;
     @Getter @Setter private String username;
 
-    // We only have singular perm grants.
-    @Getter @Setter private Grant grant;
+    @Getter @Setter private RankType rankType = RankType.DEFAULT;
 
     @Getter @Setter private Map<String, Boolean> settings = new HashMap<>();
     @Getter @Setter private Set<String> ignored = new HashSet<>();
@@ -51,7 +50,7 @@ public class Profile implements Documented {
         return "Profile{" +
                 "uuid='" + uuid + '\'' +
                 ", username='" + username + '\'' +
-                ", grant=" + grant +
+                ", rankType=" + rankType.name() +
                 ", ignored=" + ignored +
                 '}';
     }

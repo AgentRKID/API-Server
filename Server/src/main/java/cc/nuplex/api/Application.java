@@ -5,7 +5,6 @@ import cc.nuplex.api.config.mongo.MongoSettings;
 import cc.nuplex.api.config.spark.SparkSettings;
 import cc.nuplex.api.endpoint.EndpointController;
 import cc.nuplex.api.profile.ProfileManager;
-import cc.nuplex.api.rank.RankManager;
 import cc.nuplex.api.storage.Mongo;
 import cc.nuplex.api.util.log.LogFormat;
 import com.google.gson.Gson;
@@ -36,7 +35,6 @@ public class Application {
     @Getter private MongoDatabase database;
 
     @Getter private ProfileManager profileManager;
-    @Getter private RankManager rankManager;
     @Getter private EndpointController endpointService;
 
     public static void main(String[] args) {
@@ -99,7 +97,6 @@ public class Application {
 
         // Stop all managers
         if (this.profileManager != null) this.profileManager.stop();
-        if (this.rankManager != null) this.rankManager.stop();
 
         // Close mongo connection
         if (this.mongo != null) this.mongo.close();
