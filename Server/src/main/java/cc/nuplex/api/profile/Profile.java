@@ -29,6 +29,7 @@ public class Profile implements Documented {
     public Profile() {}
 
     public void update(Profile other) {
+        this.rankType = other.rankType;
         this.ignored = other.ignored;
         this.settings = other.settings;
     }
