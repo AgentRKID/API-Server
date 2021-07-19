@@ -3,7 +3,7 @@ package cc.nuplex.api.profile;
 import cc.nuplex.api.Application;
 import cc.nuplex.api.General;
 import cc.nuplex.api.util.MongoUtils;
-import cc.nuplex.api.util.map.ExpireableMap;
+import cc.nuplex.api.util.expireable.ExpireableMap;
 import com.google.gson.JsonElement;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
@@ -17,8 +17,9 @@ import java.util.concurrent.TimeUnit;
 
 public class ProfileManager {
 
-    private final Map<String, Profile> uuidToProfile = new ExpireableMap<>(5L, TimeUnit.SECONDS);
-    private final Map<String, Profile> usernameToProfile = new ExpireableMap<>(5L, TimeUnit.SECONDS);
+    private final Map<String, Profile> uuidToProfile = new ExpireableMap<>(5L, TimeUnit.MINUTES,
+            (uuid, profile) -> this.removeProfile(profile, true, false));
+    private final Map<String, Profile> usernameToProfile = new ExpireableMap<>(5L, TimeUnit.MINUTES);
 
     private final MongoCollection<Document> collection = Application.getInstance().getDatabase().getCollection("profiles");
 
@@ -145,11 +146,24 @@ public class ProfileManager {
         }
     }
 
-    public void removeProfile(UUID uuid) {
+    public void removeProfile(UUID uuid, boolean save, boolean async) {
         Profile profile = this.uuidToProfile.remove(uuid.toString());
 
         if (profile != null) {
             this.usernameToProfile.remove(profile.getUsername());
+
+            if (save) {
+                this.save(profile, async);
+            }
+        }
+    }
+
+    public void removeProfile(Profile profile, boolean save, boolean async) {
+        this.uuidToProfile.remove(profile.getUuid());
+        this.usernameToProfile.remove(profile.getUsername().toLowerCase());
+
+        if (save) {
+            this.save(profile, async);
         }
     }
 

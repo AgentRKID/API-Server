@@ -1,4 +1,4 @@
-package cc.nuplex.api.util.map;
+package cc.nuplex.api.util.expireable;
 
 import cc.nuplex.api.Application;
 import cc.nuplex.api.General;

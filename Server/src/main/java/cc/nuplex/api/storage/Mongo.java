@@ -24,7 +24,7 @@ public class Mongo {
             this.client = null;
 
             if (General.isDebug()) {
-                Application.LOGGER.info("");
+                Application.LOGGER.info("Closed Mongo Client.");
             }
         }
     }
