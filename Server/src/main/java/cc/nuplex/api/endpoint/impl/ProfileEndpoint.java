@@ -6,6 +6,8 @@ import cc.nuplex.api.endpoint.EndpointErrors;
 import cc.nuplex.api.profile.Profile;
 import cc.nuplex.api.profile.ProfileManager;
 import cc.nuplex.api.util.UUIDUtils;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 import java.util.UUID;
@@ -73,6 +75,35 @@ public class ProfileEndpoint extends Endpoint {
             } catch (JsonParseException ex) {
                 return EndpointErrors.INVALID_JSON;
             }
+        });
+
+        addRoute(":uuid/status", Type.POST, (request, response) -> {
+            UUID uuid = UUIDUtils.fromStringOrNull(request.params("uuid"));
+
+            if (uuid == UUIDUtils.NULL_UUID) {
+                return EndpointErrors.INVALID_UUID;
+            }
+
+            String body = request.body();
+
+            try {
+                JsonElement element = Application.JSON_PARSER.parse(body);
+
+                if (element.isJsonNull()) {
+                    return EndpointErrors.INVALID_JSON;
+                }
+
+                JsonObject object = element.getAsJsonObject();
+                Profile profile = profileManager.getProfile(uuid, true);
+
+                if (profile != null) {
+                    if (object.has("online")) profile.setOnline(object.get("online").getAsBoolean());
+                    if (object.has("lastOnline")) profile.setLastOnline(object.get("lastOnline").getAsLong());
+                }
+            } catch (JsonParseException ex) {
+                return EndpointErrors.INVALID_JSON;
+            }
+            return SUCCESS;
         });
     }
 

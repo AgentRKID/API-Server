@@ -19,6 +19,11 @@ public class Profile implements Documented {
     @Getter @Setter private Map<String, Boolean> settings = new HashMap<>();
     @Getter @Setter private Set<String> ignored = new HashSet<>();
 
+    @Getter @Setter private Long firstJoin = System.currentTimeMillis();
+    @Getter @Setter private Long lastOnline = System.currentTimeMillis();
+
+    @Getter @Setter private boolean online;
+
     @ConstructorProperties({ "uniqueId ", "username" })
     public Profile(String uuid, String username) {
         this.uuid = uuid;
@@ -32,6 +37,7 @@ public class Profile implements Documented {
         this.rankType = other.rankType;
         this.ignored = other.ignored;
         this.settings = other.settings;
+        this.online = other.online;
     }
 
     public void saveSetting(Enum<?> setting, boolean value) {
@@ -51,14 +57,13 @@ public class Profile implements Documented {
         return "Profile{" +
                 "uuid='" + uuid + '\'' +
                 ", username='" + username + '\'' +
-                ", rankType=" + rankType.name() +
+                ", rankType=" + rankType +
+                ", settings=" + settings +
                 ", ignored=" + ignored +
+                ", firstJoin=" + firstJoin +
+                ", lastOnline=" + lastOnline +
+                ", online=" + online +
                 '}';
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(uuid, username, ignored);
     }
 
 }
