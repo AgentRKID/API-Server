@@ -1,5 +1,8 @@
 # Server API
 Handles Incoming Requests for Profiles and more.
 
-# Clean Up
-Everything needs to be cleaned up, personally right now I don't like the packaging, but I can't do any better + optimize more things.
+<br />
+This was built for a server i was working on, but never actually finished, i personally believe the code here is not efficient enough, and alot of my newer code is better, this was built to have ranks that would barely change with a settings system which i believe is also terrible.
+
+<br />
+Feel free to use!
